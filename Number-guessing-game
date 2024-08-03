@@ -1,0 +1,88 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+
+public class NumberGuessingGameWithDashboard {
+
+    private JFrame frame;
+    private JTextField guessField;
+    private JTextArea resultArea;
+    private JButton guessButton;
+    private int numberToGuess;
+    private int numberOfTries;
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new NumberGuessingGameWithDashboard().createAndShowGUI());
+    }
+
+    private void createAndShowGUI() {
+        // Set up the frame
+        frame = new JFrame("Number Guessing Game");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLayout(new BorderLayout());
+
+        // Set up the panel for the dashboard
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(3, 2));
+
+        JLabel guessLabel = new JLabel("Enter your guess:");
+        guessField = new JTextField();
+        guessButton = new JButton("Guess");
+        resultArea = new JTextArea();
+        resultArea.setEditable(false);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+
+        panel.add(guessLabel);
+        panel.add(guessField);
+        panel.add(guessButton);
+        panel.add(new JLabel()); // Empty label for layout alignment
+        panel.add(new JLabel("Results:"));
+        panel.add(new JScrollPane(resultArea));
+
+        frame.add(panel, BorderLayout.CENTER);
+        frame.setVisible(true);
+
+        // Initialize the game
+        initializeGame();
+
+        // Add action listener for the Guess button
+        guessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleGuess();
+            }
+        });
+    }
+
+    private void initializeGame() {
+        Random random = new Random();
+        numberToGuess = random.nextInt(100) + 1;
+        numberOfTries = 0;
+        resultArea.setText("Game started! Guess a number between 1 and 100.");
+    }
+
+    private void handleGuess() {
+        try {
+            int userGuess = Integer.parseInt(guessField.getText());
+            numberOfTries++;
+
+            if (userGuess < numberToGuess) {
+                resultArea.append("\n" + userGuess + " is too low! Try again.");
+            } else if (userGuess > numberToGuess) {
+                resultArea.append("\n" + userGuess + " is too high! Try again.");
+            } else {
+                resultArea.append("\nCongratulations! You've guessed the number in " + numberOfTries + " tries.");
+                // Initialize a new game
+                initializeGame();
+            }
+            guessField.setText("");
+        } catch (NumberFormatException ex) {
+            resultArea.append("\nPlease enter a valid integer.");
+        }
+    }
+}
+
